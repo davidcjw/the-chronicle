@@ -98,14 +98,14 @@ Reads and writes directly to Reminders.app via a compiled Swift binary that uses
 **One-time setup — compile the binary:**
 
 ```bash
-swiftc plugins/reminders/reminders-cli.swift \
-  -o plugins/reminders/reminders-cli
+swiftc plugins/apple-reminders/reminders-cli.swift \
+  -o plugins/apple-reminders/reminders-cli
 ```
 
 On first server start after compiling, macOS will prompt for Reminders access for the binary. Grant it once and it's remembered.
 
 ```js
-reminders: {
+"apple-reminders": {
   lists: [],          // empty = all lists; e.g. ["Reminders", "Work"]
   defaultList: null,  // list new reminders are added to; null = system default
   maxItems: 20,
@@ -132,9 +132,12 @@ The widget shows your open MRs and flags any with unresolved review threads.
 
 - **Drag** any card by its header to reorder
 - **Resize** from the bottom-right or bottom-left corner handle
+- **Collapse** any card by clicking the **⌄ chevron** in its header — it shrinks to just the title bar; click again to expand. Collapsed state persists across reloads.
 - Layout is saved to `localStorage` automatically
-- **⊞ Reset layout** clears the saved layout and restores widget defaults
+- **⊞ Reset layout** clears the saved layout and restores widget defaults (collapsed states are preserved)
 - **↻ Refresh** re-fetches all widget data without resetting positions
+
+**Responsive** — on viewports narrower than 640 px the grid switches to a single-column stacked layout and drag/resize are disabled. The header collapses to a compact vertical layout.
 
 **Theme switcher** — click any coloured circle in the header to switch theme. Choice is persisted across reloads.
 
@@ -232,10 +235,10 @@ notion: {
 
 ---
 
-### `reminders`
+### `apple-reminders`
 
 ```js
-reminders: {
+"apple-reminders": {
   lists: [],
   defaultList: null,
   maxItems: 20,
@@ -276,7 +279,7 @@ disabled: ["gitlab"],
 |-----|------|-------------|
 | `disabled` | `string[]` | Plugin IDs to skip at server startup. The plugin's routes are not registered and its widget does not appear. Env vars are not checked. |
 
-Valid IDs: `"notion"`, `"calendar"`, `"reminders"`, `"news"`, `"gitlab"`, or any custom plugin ID you've added.
+Valid IDs: `"notion"`, `"calendar"`, `"apple-reminders"`, `"google-tasks"`, `"news"`, `"gitlab"`, or any custom plugin ID you've added.
 
 Use this to hide a widget without deleting its files or removing its env vars. When a plugin is removed from `disabled`, restart the server — it will reappear and the grid will auto-compact around it.
 
@@ -342,22 +345,24 @@ dashboard/
 ├── server.js              # Express server, auto-discovers plugins
 ├── dashboard.config.js    # All user-facing configuration
 ├── plugins/
+│   ├── apple-reminders/
+│   │   ├── index.js
+│   │   ├── reminders-cli.swift   # Swift source
+│   │   └── reminders-cli         # compiled binary (run swiftc once)
 │   ├── calendar/index.js
 │   ├── gitlab/index.js
+│   ├── google-tasks/index.js
 │   ├── news/index.js
-│   ├── notion/index.js
-│   └── reminders/
-│       ├── index.js
-│       ├── reminders-cli.swift   # Swift source
-│       └── reminders-cli         # compiled binary (run swiftc once)
+│   └── notion/index.js
 └── public/
     ├── index.html
     ├── styles.css
     ├── app.js             # Gridstack init, theme switcher, widget loader
     └── widgets/
+        ├── apple-reminders/widget.js
         ├── calendar/widget.js
         ├── gitlab/widget.js
+        ├── google-tasks/widget.js
         ├── news/widget.js
-        ├── notion/widget.js
-        └── reminders/widget.js
+        └── notion/widget.js
 ```
