@@ -26,7 +26,7 @@ export default {
       year: "numeric",
     });
 
-    const text = (data.bullets || []).join("\n");
+    const text = (data.bullets || []).map((b) => `• ${b}`).join("\n");
 
     el.innerHTML = `
       <style>
@@ -88,11 +88,21 @@ export default {
     const saveBtn = el.querySelector(".standup-save");
     const status = el.querySelector(".standup-status");
 
+    textarea.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const s = textarea.selectionStart;
+        const val = textarea.value;
+        textarea.value = val.slice(0, s) + "\n• " + val.slice(textarea.selectionEnd);
+        textarea.selectionStart = textarea.selectionEnd = s + 3;
+      }
+    });
+
     saveBtn.addEventListener("click", async () => {
       saveBtn.disabled = true;
       const bullets = textarea.value
         .split("\n")
-        .map((l) => l.trim())
+        .map((l) => l.replace(/^•\s*/, "").trim())
         .filter(Boolean);
       try {
         const res = await fetch("/api/standup", {
