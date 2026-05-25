@@ -82,7 +82,12 @@ export default {
         const { bullets } = req.body;
         if (!Array.isArray(bullets))
           return res.status(400).json({ error: "bullets must be an array" });
+        if (!bullets.every((s) => typeof s === "string"))
+          return res
+            .status(400)
+            .json({ error: "bullets must be an array of strings" });
 
+        const key = todayKey();
         const lines = bullets.map((s) => s.trim()).filter(Boolean);
         const bulletBlocks = lines.map((text) => ({
           object: "block",
@@ -95,10 +100,11 @@ export default {
         const notion = new Client({ auth: process.env.NOTION_TOKEN });
         try {
           const children = await fetchAllChildren(notion, pageId);
-          const toggle = findToggleForDate(children, todayKey());
+          const toggle = findToggleForDate(children, key);
 
           if (toggle) {
             const existing = await fetchAllChildren(notion, toggle.id);
+            // Notion has no transactions: if append fails after delete, the toggle is left empty.
             await Promise.all(
               existing.map((b) => notion.blocks.delete({ block_id: b.id }))
             );
@@ -119,7 +125,7 @@ export default {
                     rich_text: [
                       {
                         type: "text",
-                        text: { content: `[${todayKey()}]` },
+                        text: { content: `[${key}]` },
                       },
                     ],
                     children: bulletBlocks,
