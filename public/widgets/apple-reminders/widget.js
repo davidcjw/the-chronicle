@@ -6,7 +6,10 @@ function formatDueDate(iso) {
   const dueDay = new Date(due.getFullYear(), due.getMonth(), due.getDate());
   const diff = Math.round((dueDay - today) / 86400000);
   if (diff < 0)  return { label: "Overdue",  color: "#ef4444" };
-  if (diff === 0) return { label: "Today",    color: "#f59e0b" };
+  if (diff === 0) {
+    const time = due.toLocaleTimeString("en-SG", { hour: "2-digit", minute: "2-digit", hour12: false });
+    return { label: time, color: "#f59e0b" };
+  }
   if (diff === 1) return { label: "Tomorrow", color: "#f59e0b" };
   return {
     label: due.toLocaleDateString("en-SG", { day: "numeric", month: "short" }),
@@ -100,9 +103,12 @@ export default {
         .rem-item:hover .rem-delete{opacity:1}
         .rem-delete:hover{color:#f87171}
         .rem-group-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);padding:.5rem 0 .2rem}
-        .rem-add-form{display:flex;gap:.4rem;padding-top:.6rem;border-top:1px solid var(--border);margin-top:.25rem}
-        .rem-add-input{flex:1;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.35rem .6rem;color:var(--text);font-size:.825rem;outline:none}
+        .rem-add-form{display:flex;flex-wrap:wrap;gap:.4rem;padding-top:.6rem;border-top:1px solid var(--border);margin-top:.25rem}
+        .rem-add-input{flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.35rem .6rem;color:var(--text);font-size:.825rem;outline:none}
         .rem-add-input:focus{border-color:var(--accent)}
+        .rem-add-due{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.35rem .5rem;color:var(--text-muted);font-size:.75rem;outline:none;cursor:pointer;width:100%}
+        .rem-add-due:focus{border-color:var(--accent);color:var(--text)}
+        .rem-add-due::-webkit-calendar-picker-indicator{filter:invert(0.5);cursor:pointer}
         .rem-add-btn{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);border-radius:var(--radius-sm);padding:.35rem .7rem;font-size:.875rem;cursor:pointer}
         .rem-add-btn:hover{background:#818cf840}
       </style>
@@ -110,6 +116,7 @@ export default {
       <form class="rem-add-form">
         <input class="rem-add-input" placeholder="Add reminder…" autocomplete="off" />
         <button class="rem-add-btn" type="submit">+</button>
+        <input class="rem-add-due" type="datetime-local" title="Due date &amp; time (optional)" />
       </form>`;
 
     const listEl = el.querySelector(".rem-list");
@@ -191,22 +198,28 @@ export default {
     // ── Add reminder ──────────────────────────────────────────────
     const form = el.querySelector(".rem-add-form");
     const input = el.querySelector(".rem-add-input");
+    const dueInput = el.querySelector(".rem-add-due");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = input.value.trim();
       if (!name) return;
+      const dueDate = dueInput.value || null;
       input.value = "";
+      dueInput.value = "";
 
       const tempId = `temp-${Date.now()}`;
-      cached.unshift({ encodedId: tempId, name, list: "Reminders", dueDate: null, priority: 0 });
+      cached.unshift({ encodedId: tempId, name, list: "Reminders", dueDate, priority: 0 });
       repaint(listEl);
+
+      const body = { name };
+      if (dueDate) body.dueDate = new Date(dueDate).toISOString().replace(/\.\d{3}Z$/, "Z");
 
       try {
         const res = await fetch("/api/reminders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name }),
+          body: JSON.stringify(body),
         });
         const reminder = await res.json();
         if (reminder.error) throw new Error(reminder.error);
