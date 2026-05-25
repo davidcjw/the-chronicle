@@ -12,7 +12,10 @@ export default {
 
   render(data, el) {
     if (data.error) {
-      el.innerHTML = `<p class="widget-error">${data.error}</p>`;
+      const p = document.createElement("p");
+      p.className = "widget-error";
+      p.textContent = data.error;
+      el.replaceChildren(p);
       return;
     }
 
