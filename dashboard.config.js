@@ -34,6 +34,12 @@ export default {
     maxMRs: 20,
   },
 
+  standup: {
+    // ID of the Notion page to append standup notes to.
+    // Find it in the page URL: notion.so/<PAGE_ID>
+    pageId: null,
+  },
+
   "apple-reminders": {
     lists: [],
     defaultList: null,
