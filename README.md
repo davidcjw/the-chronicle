@@ -118,6 +118,23 @@ On first server start after compiling, macOS will prompt for Reminders access fo
 - Text field at the bottom — adds a new reminder to `defaultList`
 - Reminders are grouped by list if multiple lists are visible
 
+### Standup
+
+Appends daily standup notes to a Notion page as toggle blocks (one toggle per day, bullet items as children). Reuses the existing `NOTION_TOKEN` — no new env var needed.
+
+1. Create a dedicated Notion page for your standup log (e.g. "Daily Standup")
+2. Copy its ID from the URL: `notion.so/`**`<PAGE_ID>`**`?v=...`
+3. Grant your Notion connection access to that page under **Content Access**
+4. Set `standup.pageId` in `dashboard.config.js`
+
+```js
+standup: {
+  pageId: "your-page-id-here",
+},
+```
+
+Each day's entry is appended as a toggle block `[YYYY-MM-DD]` with bullet children. History is browsed directly in Notion.
+
 ### GitLab
 
 1. Go to your company GitLab → **User Settings → Access Tokens**
@@ -253,6 +270,20 @@ notion: {
 
 ---
 
+### `standup`
+
+```js
+standup: {
+  pageId: "your-notion-page-id",
+},
+```
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `pageId` | `string \| null` | ID of the Notion page to write standup notes to. Copy from the page URL. `null` disables the widget even if `NOTION_TOKEN` is set. |
+
+---
+
 ### `gitlab`
 
 ```js
@@ -279,7 +310,7 @@ disabled: ["gitlab"],
 |-----|------|-------------|
 | `disabled` | `string[]` | Plugin IDs to skip at server startup. The plugin's routes are not registered and its widget does not appear. Env vars are not checked. |
 
-Valid IDs: `"notion"`, `"calendar"`, `"apple-reminders"`, `"google-tasks"`, `"news"`, `"gitlab"`, or any custom plugin ID you've added.
+Valid IDs: `"notion"`, `"calendar"`, `"apple-reminders"`, `"google-tasks"`, `"standup"`, `"news"`, `"gitlab"`, or any custom plugin ID you've added.
 
 Use this to hide a widget without deleting its files or removing its env vars. When a plugin is removed from `disabled`, restart the server — it will reappear and the grid will auto-compact around it.
 
@@ -353,7 +384,8 @@ dashboard/
 │   ├── gitlab/index.js
 │   ├── google-tasks/index.js
 │   ├── news/index.js
-│   └── notion/index.js
+│   ├── notion/index.js
+│   └── standup/index.js
 └── public/
     ├── index.html
     ├── styles.css
@@ -364,5 +396,6 @@ dashboard/
         ├── gitlab/widget.js
         ├── google-tasks/widget.js
         ├── news/widget.js
-        └── notion/widget.js
+        ├── notion/widget.js
+        └── standup/widget.js
 ```
