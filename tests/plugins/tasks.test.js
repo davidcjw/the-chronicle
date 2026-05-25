@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { encodeId, decodeId } from "../../plugins/tasks/index.js";
+import { encodeId, decodeId } from "../../plugins/google-tasks/index.js";
 
 describe("encodeId / decodeId", () => {
   it("roundtrips a tasklist + task id pair", () => {
