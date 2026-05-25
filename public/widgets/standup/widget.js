@@ -89,7 +89,10 @@ export default {
     const status = el.querySelector(".standup-status");
 
     textarea.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
+      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        saveBtn.click();
+      } else if (e.key === "Enter") {
         e.preventDefault();
         const s = textarea.selectionStart;
         const val = textarea.value;
