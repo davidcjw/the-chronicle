@@ -23,6 +23,22 @@ Plugins with missing env vars are silently skipped — you only need keys for th
 
 ---
 
+## Available plugins
+
+| Plugin | ID | Env vars required | Notes |
+|--------|----|-------------------|-------|
+| Notion Tasks | `notion` | `NOTION_TOKEN`, `NOTION_DATABASE_ID` | Full CRUD — add, update status, delete |
+| Google Calendar | `calendar` | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | OAuth flow on first run; multi-calendar |
+| Apple Reminders | `apple-reminders` | — | macOS only; requires compiled Swift binary |
+| Standup Notes | `standup` | `NOTION_TOKEN` | Appends daily toggle blocks to a Notion page |
+| AI / ML News | `news` | — | Google News RSS + optional custom feeds |
+| GitLab MRs | `gitlab` | `GITLAB_TOKEN`, `GITLAB_URL` | Open MRs scoped to you, with thread counts |
+| Google Tasks | `google-tasks` | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Disabled by default; enable by removing from `disabled` in config |
+
+Any plugin whose required env vars are missing is silently skipped at startup — you only set up what you need.
+
+---
+
 ## Widget setup
 
 ### Notion
@@ -318,7 +334,12 @@ Use this to hide a widget without deleting its files or removing its env vars. W
 
 ## Adding a new widget
 
-Drop two files and restart — no changes to existing code needed.
+Drop two files and restart — no changes to existing code needed. The server auto-discovers every folder under `plugins/` and every `widget.js` under `public/widgets/`.
+
+**Quickest start:** copy an existing plugin that's closest to what you need and rename the `id`. Good starting points:
+- `plugins/news/` — read-only, no auth, simple GET route
+- `plugins/notion/` — read/write with a third-party SDK
+- `plugins/apple-reminders/` — local binary/CLI subprocess
 
 ### 1. Backend plugin — `plugins/<name>/index.js`
 
@@ -366,6 +387,47 @@ Add `MY_API_KEY` to your `.env` and restart — the widget auto-appears.
 ### Removing a widget
 
 Delete `plugins/<name>/` and `public/widgets/<name>/`. Nothing else references them. The grid auto-compacts on next load.
+
+### Plugin interface contract
+
+**Backend** (`plugins/<name>/index.js`) — default export shape:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | `string` | ✓ | Unique plugin ID. Must match the directory name and the frontend widget `id`. |
+| `label` | `string` | ✓ | Human-readable name (used in server logs). |
+| `env` | `string[]` | ✓ | Required env var names. Plugin is skipped at startup if any are missing. Pass `[]` for no requirements. |
+| `routes` | `{ method, path, handler }[]` | ✓ | Express route definitions registered at startup. |
+| `onLoad` | `async () => void` | — | Called once at startup after routes are registered. Use for warming caches or validating config. |
+
+**Frontend** (`public/widgets/<name>/widget.js`) — default export shape:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | `string` | ✓ | Must match the backend plugin `id`. |
+| `title` | `string` | ✓ | Displayed in the card header. |
+| `icon` | `string` | ✓ | Emoji shown next to the title. |
+| `size` | `"normal"` \| `"wide"` | — | Default grid width. `"normal"` = 4 cols, `"wide"` = 12 cols. User can resize after. |
+| `load()` | `async () => any` | ✓ | Fetches data (called on load and refresh). Throw to show an error state. |
+| `render(data, el)` | `(any, HTMLElement) => void` | ✓ | Renders data into `el`. Called after `load()` resolves. `el` is the card body. |
+
+### Styling your widget
+
+All built-in CSS variables are available inside `render()`. Prefer these over hardcoded colours so your widget respects the theme switcher:
+
+```css
+var(--bg)          /* page background */
+var(--surface)     /* card background */
+var(--surface-2)   /* inputs, secondary surfaces */
+var(--border)      /* borders and dividers */
+var(--text)        /* primary text */
+var(--text-muted)  /* secondary/hint text */
+var(--accent)      /* highlight colour */
+var(--accent-dim)  /* muted accent (button backgrounds) */
+var(--radius-sm)   /* small border radius */
+```
+
+Scope your styles with a unique class prefix (e.g. `.my-widget-`) to avoid collisions with other widgets.
 
 ---
 
