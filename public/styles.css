@@ -498,3 +498,52 @@ main {
 .card-body::-webkit-scrollbar { width: 4px; }
 .card-body::-webkit-scrollbar-track { background: transparent; }
 .card-body::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 2px; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  header { padding: 1rem 1.25rem; }
+  main { padding: 1rem 1.25rem; }
+}
+
+@media (max-width: 640px) {
+  html { font-size: 14px; }
+
+  header { padding: 0.875rem 1rem; }
+
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .brand-name { font-size: 1rem; }
+
+  .brand-sub { margin-top: 0.2rem; }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Compress the theme picker to save space */
+  #theme-select { flex: 1; }
+
+  #reset-btn { display: none; }
+
+  main { padding: 0.75rem; }
+
+  .card-header {
+    padding: 0.7rem 1rem 0.6rem;
+  }
+
+  .card-body {
+    padding: 0.6rem 1rem 0.75rem;
+  }
+
+  /* No drag affordance on touch */
+  .drag-hint { display: none; }
+  .card-header { cursor: default; }
+
+  /* News grid single column */
+  .news-grid { grid-template-columns: 1fr; }
+}

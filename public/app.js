@@ -87,15 +87,30 @@ async function init(resetPositions = false) {
   if (grid) {
     grid.removeAll(true); // remove widgets + their DOM, keep gridstack instance
   } else {
+    const isMobile = () => window.innerWidth < 640;
     grid = GridStack.init({
       column: 12,
+      columnOpts: {
+        breakpointForWindow: true,
+        layout: "compact",
+        breakpoints: [{ w: 640, c: 1 }],
+      },
       cellHeight: 60,
       animate: true,
       float: false,
       margin: 10,
       draggable: { handle: ".card-header" },
       resizable: { handles: "se, sw" },
+      disableDrag: isMobile(),
+      disableResize: isMobile(),
     }, "#grid");
+
+    window.addEventListener("resize", () => {
+      const mobile = isMobile();
+      grid.setStatic(false);
+      grid.enableMove(!mobile);
+      grid.enableResize(!mobile);
+    }, { passive: true });
     grid.on("change", saveLayout); // register once, not on every refresh
   }
 

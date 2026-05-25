@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import config from "../../dashboard.config.js";
 
-const cfg = config.tasks ?? {};
+const cfg = config["google-tasks"] ?? {};
 const maxItems = cfg.maxItems ?? 20;
 const TOKEN_PATH = path.resolve("tokens.json");
 
@@ -50,7 +50,7 @@ function handleApiError(err, res) {
 }
 
 export default {
-  id: "tasks",
+  id: "google-tasks",
   label: "Google Tasks",
   env: ["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"],
   routes: [

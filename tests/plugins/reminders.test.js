@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { encodeId, decodeId } from "../../plugins/reminders/index.js";
+import { encodeId, decodeId } from "../../plugins/apple-reminders/index.js";
 
 describe("encodeId / decodeId", () => {
   it("roundtrips an EventKit calendarItemIdentifier", () => {

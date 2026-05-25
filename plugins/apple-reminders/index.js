@@ -4,7 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import config from "../../dashboard.config.js";
 
-const cfg = config.reminders ?? {};
+const cfg = config["apple-reminders"] ?? {};
 const maxItems = cfg.maxItems ?? 20;
 const allowedLists = cfg.lists ?? [];
 const defaultList = cfg.defaultList ?? null;
@@ -30,7 +30,7 @@ async function run(...args) {
 }
 
 export default {
-  id: "reminders",
+  id: "apple-reminders",
   label: "Reminders",
   env: [],
   routes: [

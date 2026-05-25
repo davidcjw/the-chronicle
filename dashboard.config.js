@@ -25,7 +25,6 @@ export default {
     maxTasks: 20,
     // Map these to the exact property names in your Notion database
     properties: {
-      category: "Category",
       dueDate: "Due Date",
     },
   },
@@ -35,7 +34,7 @@ export default {
     maxMRs: 20,
   },
 
-  reminders: {
+  "apple-reminders": {
     lists: [],
     defaultList: null,
     maxItems: 20,
@@ -43,5 +42,5 @@ export default {
 
   // Plugin IDs listed here are skipped at startup even if their env vars are set.
   // e.g. disabled: ["gitlab", "news"]
-  disabled: ["gitlab", "tasks"],
+  disabled: ["google-tasks"],
 };
