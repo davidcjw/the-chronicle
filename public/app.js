@@ -2,6 +2,7 @@
 // To add a widget: create plugins/<name>/index.js (backend) + public/widgets/<name>/widget.js (frontend).
 
 const LAYOUT_KEY = "dashboard-layout";
+const COLLAPSE_KEY = "dashboard-collapsed";
 
 const refreshBtn = document.getElementById("refresh-btn");
 const resetBtn = document.getElementById("reset-btn");
@@ -43,12 +44,46 @@ function clearLayout() {
   localStorage.removeItem(LAYOUT_KEY);
 }
 
+function loadCollapsed() {
+  try { return JSON.parse(localStorage.getItem(COLLAPSE_KEY) || "{}"); }
+  catch { return {}; }
+}
+
+function saveCollapsed(state) {
+  localStorage.setItem(COLLAPSE_KEY, JSON.stringify(state));
+}
+
+function toggleCollapse(id) {
+  const card = document.getElementById(`card-${id}`);
+  const gsItem = card?.closest(".grid-stack-item");
+  if (!card || !gsItem) return;
+
+  const state = loadCollapsed();
+  if (card.classList.contains("is-collapsed")) {
+    const h = state[id] || 7;
+    card.classList.remove("is-collapsed");
+    grid.update(gsItem, { h, minH: 4 });
+    delete state[id];
+  } else {
+    state[id] = parseInt(gsItem.getAttribute("gs-h")) || 7;
+    card.classList.add("is-collapsed");
+    grid.update(gsItem, { h: 1, minH: 1 });
+  }
+  saveCollapsed(state);
+  saveLayout();
+}
+
 function cardHTML(widget) {
   return `
     <section class="card" id="card-${widget.id}">
       <div class="card-header" title="Drag to move">
         <span class="card-icon">${widget.icon}</span>
         <h2>${widget.title}</h2>
+        <button class="card-collapse" data-id="${widget.id}" title="Collapse">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <polyline points="2,4 6,8 10,4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
         <span class="drag-hint">⠿</span>
       </div>
       <div class="card-body" id="body-${widget.id}">
@@ -155,6 +190,17 @@ async function init(resetPositions = false) {
     saveLayout(); // persist the compacted layout
   }
 
+  // Re-apply collapsed state (after DOM exists)
+  const collapseState = loadCollapsed();
+  for (const widget of validWidgets) {
+    if (!(widget.id in collapseState)) continue;
+    const card = document.getElementById(`card-${widget.id}`);
+    const gsItem = card?.closest(".grid-stack-item");
+    if (!card || !gsItem) continue;
+    card.classList.add("is-collapsed");
+    grid.update(gsItem, { h: 1, minH: 1 });
+  }
+
   // Load data in parallel
   await Promise.allSettled(validWidgets.map(loadWidget));
 }
@@ -171,6 +217,11 @@ themeSelect.addEventListener("change", () => applyTheme(themeSelect.value));
 
 // Set initial value on load
 applyTheme(localStorage.getItem("dashboard-theme") ?? "dark");
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".card-collapse");
+  if (btn) toggleCollapse(btn.dataset.id);
+});
 
 refreshBtn.addEventListener("click", () => init(false));
 resetBtn.addEventListener("click", () => {

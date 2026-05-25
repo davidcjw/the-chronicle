@@ -494,6 +494,28 @@ main {
 
 .news-item:hover .news-arrow { opacity: 1; }
 
+/* ── Collapse toggle ── */
+.card-collapse {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.15rem 0.25rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.card-collapse:hover { color: var(--text); }
+
+.card-collapse svg { transition: transform 0.2s ease; }
+
+.is-collapsed .card-collapse svg { transform: rotate(-90deg); }
+
+.is-collapsed .card-body { display: none; }
+
 /* ── Scrollbar ── */
 .card-body::-webkit-scrollbar { width: 4px; }
 .card-body::-webkit-scrollbar-track { background: transparent; }
