@@ -1,5 +1,7 @@
 # The Chronicle
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
 > *Inspired by the journals, scrolls, and quest logs of Old School RuneScape — a personal dashboard that keeps you informed and on track.*
 
 ![The Chronicle dashboard preview](docs/preview.png)
@@ -7,6 +9,21 @@
 A local, extensible web dashboard. Widgets are draggable and resizable — layout is saved automatically. Built with Node.js/Express backend and vanilla JS frontend; no build step required.
 
 **Built-in widgets:** Notion tasks (full CRUD), Google Calendar (multi-calendar with filter chips), Apple Reminders (EventKit, syncs across all Apple devices), AI/ML news (Google News RSS + custom feeds), GitLab MRs (with unresolved thread counts).
+
+---
+
+## Table of Contents
+
+- [Quick start](#quick-start)
+- [Available plugins](#available-plugins)
+- [Widget setup](#widget-setup)
+- [Layout & themes](#layout--themes)
+- [Disabling a plugin](#disabling-a-plugin)
+- [Configuration reference](#configuration-reference--dashboardconfigjs)
+- [Adding a new widget](#adding-a-new-widget)
+- [Project structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
@@ -461,3 +478,31 @@ dashboard/
         ├── notion/widget.js
         └── standup/widget.js
 ```
+
+---
+
+## Contributing
+
+Contributions are welcome! Please open an issue first to discuss what you'd like to change.
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m 'feat: describe change'`)
+4. Push and open a pull request
+
+Please make sure tests pass (`npm test`) before submitting a PR.
+
+---
+
+## Code of Conduct
+
+This project follows the [Contributor Covenant v2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
+By participating you agree to uphold a welcoming, harassment-free environment.
+
+---
+
+## License
+
+Distributed under the MIT License.
+
+> **Note:** This repository does not yet include a `LICENSE` file. Consider adding one — you can generate a standard MIT license at [choosealicense.com](https://choosealicense.com/licenses/mit/).
