@@ -111,8 +111,12 @@ async function getEvents(req, res) {
 
     res.json({ events, calendars });
   } catch (err) {
-    if (err.code === 401) {
-      fs.unlinkSync(TOKEN_PATH);
+    const isAuthError =
+      err.code === 401 ||
+      err.message === "invalid_grant" ||
+      err.response?.data?.error === "invalid_grant";
+    if (isAuthError) {
+      if (fs.existsSync(TOKEN_PATH)) fs.unlinkSync(TOKEN_PATH);
       return res.status(401).json({ error: "token_expired", authUrl: "/auth/google" });
     }
     res.status(500).json({ error: err.message });
