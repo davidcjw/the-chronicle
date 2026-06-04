@@ -26,7 +26,8 @@ export default {
       year: "numeric",
     });
 
-    const text = (data.bullets || []).map((b) => `• ${b}`).join("\n");
+    const bullets = data.bullets || [];
+    const text = bullets.length ? bullets.map((b) => `• ${b}`).join("\n") : "• ";
 
     el.innerHTML = `
       <style>
