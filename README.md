@@ -33,10 +33,30 @@ A local, extensible web dashboard. Widgets are draggable and resizable — layou
 cd dashboard
 npm install
 cp .env.example .env   # fill in keys for the widgets you want
-npm run dev            # → http://localhost:3000
+npm run dev            # → http://localhost:3737
 ```
 
 Plugins with missing env vars are silently skipped — you only need keys for the widgets you want.
+
+### Auto-start on macOS (PM2)
+
+The dashboard can run automatically on login using PM2:
+
+```bash
+npm install -g pm2
+pm2 start "npm run dev" --name chronicle
+pm2 save
+pm2 startup   # follow the printed sudo command to register with launchd
+```
+
+After setup, the server starts automatically on every login. Useful PM2 commands:
+
+```bash
+pm2 logs chronicle      # view server logs
+pm2 restart chronicle   # restart after code or config changes
+pm2 stop chronicle      # stop the server
+pm2 status              # check running status
+```
 
 ---
 
@@ -92,7 +112,7 @@ notion: {
 2. **APIs & Services → Enable APIs** → enable **Google Calendar API**
 3. **APIs & Services → Credentials → Create Credentials → OAuth 2.0 Client ID**
    - Application type: **Web application**
-   - Authorised redirect URI: `http://localhost:3000/auth/google/callback`
+   - Authorised redirect URI: `http://localhost:3737/auth/google/callback`
 4. Copy **Client ID** → `GOOGLE_CLIENT_ID` and **Client Secret** → `GOOGLE_CLIENT_SECRET`
 
 On first run, click **Connect →** in the calendar card to complete the OAuth flow. Tokens are saved to `tokens.json` (gitignored).

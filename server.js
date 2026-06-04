@@ -8,7 +8,7 @@ import { isEligible } from "./lib/pluginUtils.js";
 const disabledPlugins = new Set(config.disabled || []);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3737;
 
 app.use(express.json());
 app.use(express.static("public"));

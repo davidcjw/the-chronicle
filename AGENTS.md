@@ -6,7 +6,7 @@
 cd dashboard
 npm install
 cp .env.example .env   # fill in keys for desired widgets
-npm run dev            # → http://localhost:3000
+npm run dev            # → http://localhost:3737
 ```
 
 Plugins with missing env vars are silently skipped — only configure what you need.
@@ -31,6 +31,14 @@ npm run dev        # start with --watch (auto-restart on changes)
 npm run start      # production start
 npm run test       # run tests with vitest (single run)
 npm run test:watch # run vitest in watch mode
+```
+
+The server is managed via PM2 for auto-start on macOS login:
+
+```bash
+pm2 restart chronicle   # restart after code or config changes
+pm2 logs chronicle      # view server logs
+pm2 status              # check running status
 ```
 
 ## Coding/Development Guidelines
