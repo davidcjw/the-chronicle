@@ -13,7 +13,7 @@ function gitlabFetch(path) {
 
 async function getUnresolvedCount(projectId, mrIid) {
   const res = await gitlabFetch(
-    `/projects/${projectId}/merge_requests/${mrIid}/discussions`
+    `/projects/${projectId}/merge_requests/${mrIid}/discussions?per_page=100`
   );
   if (!res.ok) return null;
   const discussions = await res.json();
