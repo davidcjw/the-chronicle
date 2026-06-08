@@ -12,12 +12,19 @@ function gitlabFetch(path) {
 }
 
 async function getUnresolvedCount(projectId, mrIid) {
-  const res = await gitlabFetch(
-    `/projects/${projectId}/merge_requests/${mrIid}/discussions?per_page=100`
-  );
-  if (!res.ok) return null;
-  const discussions = await res.json();
-  return discussions.filter((d) =>
+  let page = 1;
+  let allDiscussions = [];
+  while (true) {
+    const res = await gitlabFetch(
+      `/projects/${projectId}/merge_requests/${mrIid}/discussions?per_page=100&page=${page}`
+    );
+    if (!res.ok) return null;
+    const discussions = await res.json();
+    allDiscussions = allDiscussions.concat(discussions);
+    if (discussions.length < 100) break;
+    page++;
+  }
+  return allDiscussions.filter((d) =>
     d.notes?.some((n) => n.resolvable === true && n.resolved === false)
   ).length;
 }
