@@ -30,13 +30,15 @@ function getOAuthClient() {
   return new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    "http://localhost:3000/auth/google/callback"
+    "http://localhost:3737/auth/google/callback"
   );
 }
 
 function loadTokens(client) {
   if (fs.existsSync(TOKEN_PATH)) {
-    client.setCredentials(JSON.parse(fs.readFileSync(TOKEN_PATH, "utf-8")));
+    const tokens = JSON.parse(fs.readFileSync(TOKEN_PATH, "utf-8"));
+    if (!tokens.refresh_token) return false;
+    client.setCredentials(tokens);
     return true;
   }
   return false;
@@ -114,6 +116,7 @@ async function getEvents(req, res) {
     const isAuthError =
       err.code === 401 ||
       err.message === "invalid_grant" ||
+      err.message?.includes("No refresh token") ||
       err.response?.data?.error === "invalid_grant";
     if (isAuthError) {
       if (fs.existsSync(TOKEN_PATH)) fs.unlinkSync(TOKEN_PATH);
