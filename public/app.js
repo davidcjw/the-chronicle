@@ -216,7 +216,7 @@ function applyTheme(theme) {
 themeSelect.addEventListener("change", () => applyTheme(themeSelect.value));
 
 // Set initial value on load
-applyTheme(localStorage.getItem("dashboard-theme") ?? "dark");
+applyTheme(localStorage.getItem("dashboard-theme") ?? "nord");
 
 document.addEventListener("click", (e) => {
   const btn = e.target.closest(".card-collapse");
