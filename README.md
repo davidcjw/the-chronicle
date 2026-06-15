@@ -523,6 +523,4 @@ By participating you agree to uphold a welcoming, harassment-free environment.
 
 ## License
 
-Distributed under the MIT License.
-
-> **Note:** This repository does not yet include a `LICENSE` file. Consider adding one — you can generate a standard MIT license at [choosealicense.com](https://choosealicense.com/licenses/mit/).
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
